@@ -99,10 +99,7 @@ def main():
     st.markdown("98世代のウマ娘の顔を識別するアプリです．")
 
     #サイドバーの表示
-    file = st.sidebar.file_uploader("画像をアップロードしてください．", type=['jpg','jpeg', 'png'])
-
-    #ウマ娘の名前のリスト
-    names = ["specialweek", "seiunsky", "kinghalo", "elcondorpasa", "grasswonder"]
+    image = st.sidebar.file_uploader("画像をアップロードしてください．", type=['jpg','jpeg', 'png'])
 
     #保存済みのモデルをロード
     model = CNN()
@@ -110,13 +107,13 @@ def main():
     model.eval()
 
     #画像ファイルが読み込まれた後，顔認識を実行
-    if file != None:
+    if image != None:
         progress_message = st.empty()
         progress_message.write("Now Loading...")
-
-        image = Image.open(file)
+        image = np.array(Image.open(image))
 
         detect_image = detect(image, model)
+
 
         st.image(detect_image, use_column_width=True)
 
