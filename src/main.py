@@ -2,19 +2,14 @@
 import streamlit as st
 import numpy as np
 from PIL import Image
-from PIL import ImageDraw
-from PIL import ImageFont
 import cv2
-import io
-import os
-import json
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
 import torchvision.transforms as transforms
 
 
-#モデルの定義
+#ロードするモデルの定義
 class CNN(nn.Module):
   def __init__(self):
     super(CNN, self).__init__()
@@ -43,14 +38,17 @@ class CNN(nn.Module):
     return x
 
 
+#読み込んだ画像の中からウマ娘の顔を検出し，名前とBoxを描画する関数
 def detect(image, model):
 
     #顔検出器の準備
     classifier = cv2.CascadeClassifier("lbpcascade_animeface.xml")
-
+    #画像をグレースケール化
     gray_image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+    #画像の中から顔を検出
     faces = classifier.detectMultiScale(gray_image)
 
+    #1人以上の顔を検出した場合
     if len(faces)>0:
         for face in faces:
             x, y, width, height = face
@@ -73,6 +71,7 @@ def detect(image, model):
     return image
 
 
+#ラベルから対応するウマ娘の名前を返す関数
 def label_to_name(name_label):
 
     if name_label == 0:
@@ -108,13 +107,12 @@ def main():
 
     #画像ファイルが読み込まれた後，顔認識を実行
     if image != None:
-        progress_message = st.empty()
-        progress_message.write("Now Loading...")
+        
+        #画像の読み込み
         image = np.array(Image.open(image))
-
+        #画像からウマ娘の顔検出を行う
         detect_image = detect(image, model)
-
-
+        #顔検出を行った結果を表示
         st.image(detect_image, use_column_width=True)
 
 
